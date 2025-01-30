@@ -139,8 +139,13 @@ body {
 .message img.chat-icon {
     width: 32px;
     height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50%;
-    object-fit: cover;
+    background: var(--deep-green);
+    color: var(--text-light);
+    font-size: 18px;
 }
 
 .bot-message {

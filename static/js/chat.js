@@ -55,10 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isBot ? 'bot-message' : 'user-message'} animate__animated animate__fadeIn`;
 
-        const icon = document.createElement('img');
-        icon.className = 'chat-icon';
-        icon.src = isBot ? '/static/images/weed-bot.svg' : '/static/images/user.svg';
-        icon.alt = isBot ? 'Bot Icon' : 'User Icon';
+        const icon = document.createElement('i');
+        icon.className = isBot ? 'fas fa-robot chat-icon' : 'fas fa-user chat-icon';
 
         messageDiv.appendChild(icon);
         const messageContent = document.createElement('div');
