@@ -5,18 +5,35 @@
             50% { transform: translateY(-10px); }
             100% { transform: translateY(0); }
         }
+        @keyframes fade {
+            0% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.4; }
+        }
         .wave { animation: wave 3s ease-in-out infinite; }
+        .glow { animation: fade 2s ease-in-out infinite; }
     </style>
+
+    <!-- Background circles -->
+    <circle class="glow" cx="50" cy="50" r="40" fill="#e2f0ea" opacity="0.3"/>
+    <circle class="glow" cx="50" cy="50" r="35" fill="#c5e1d5" opacity="0.2"/>
+
     <g class="wave">
-        <path d="M20,50 Q35,40 50,50 T80,50" 
+        <!-- Relaxation waves -->
+        <path d="M20,40 Q35,30 50,40 T80,40" 
               fill="none" 
               stroke="#4a7856" 
-              stroke-width="4"
+              stroke-width="3"
               stroke-linecap="round"/>
-        <path d="M20,65 Q35,55 50,65 T80,65" 
+        <path d="M20,55 Q35,45 50,55 T80,55" 
               fill="none" 
               stroke="#4a7856" 
-              stroke-width="4"
+              stroke-width="3"
+              stroke-linecap="round"/>
+        <path d="M20,70 Q35,60 50,70 T80,70" 
+              fill="none" 
+              stroke="#4a7856" 
+              stroke-width="3"
               stroke-linecap="round"/>
     </g>
 </svg>
