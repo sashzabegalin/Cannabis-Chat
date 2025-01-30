@@ -58,10 +58,23 @@ What would you like to know more about?`, [
     }
 
     function createStrainCard(strain) {
+        const effectIcons = strain.effects.map(effect => {
+            const iconName = effect.toLowerCase().replace(/\s+/g, '');
+            return `
+                <div class="effect-icon">
+                    <img src="/static/images/effects/${iconName}.svg" alt="${effect} effect" />
+                    <span>${effect}</span>
+                </div>
+            `;
+        }).join('');
+
         return `
             <div class="strain-card animate__animated animate__fadeIn">
                 <h3>${strain.name}</h3>
                 <div class="strain-type">${strain.type}</div>
+                <div class="strain-effect-icons">
+                    ${effectIcons}
+                </div>
                 <div class="strain-content">
                     <div class="strain-info">
                         <p><strong>THC:</strong> ${strain.thc_content}</p>
