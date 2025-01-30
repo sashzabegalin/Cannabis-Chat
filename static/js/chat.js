@@ -54,56 +54,28 @@ document.addEventListener('DOMContentLoaded', function() {
     function addMessage(message, isBot = false) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isBot ? 'bot-message' : 'user-message'} animate__animated animate__fadeIn`;
-        messageDiv.innerHTML = message;
+
+        const icon = document.createElement('img');
+        icon.className = 'chat-icon';
+        icon.src = isBot ? '/static/images/weed-bot.svg' : '/static/images/user.svg';
+        icon.alt = isBot ? 'Bot Icon' : 'User Icon';
+
+        messageDiv.appendChild(icon);
+        const messageContent = document.createElement('div');
+        messageContent.innerHTML = message;
+        messageDiv.appendChild(messageContent);
+
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    function getEffectIcon(effect) {
-        const effectMap = {
-            'relaxed': 'relaxation',
-            'happy': 'creativity',
-            'euphoric': 'energy',
-            'creative': 'creativity',
-            'focused': 'energy',
-            'energetic': 'energy',
-            'sleepy': 'relaxation',
-            'uplifted': 'energy',
-            'hungry': 'relaxation',
-            'pain relief': 'relaxation'
-        };
-
-        const baseEffect = effectMap[effect.toLowerCase()] || 'relaxation';
-        return `
-            <div class="effect-icon">
-                <img src="/static/images/effects/${baseEffect}.svg" alt="${effect}" />
-                <span>${effect}</span>
-            </div>
-        `;
-    }
-
     function createStrainCard(strain) {
-        const effectIcons = strain.effects.map(effect => getEffectIcon(effect)).join('');
-
         return `
             <div class="strain-card animate__animated animate__fadeIn">
                 <h3>${strain.name}</h3>
                 <div class="strain-type">${strain.type}</div>
-                <div class="strain-effect-icons">
-                    ${effectIcons}
-                </div>
-                <div class="strain-content">
-                    <div class="strain-info">
-                        <p><strong>THC:</strong> ${strain.thc_content}</p>
-                        <p><strong>CBD:</strong> ${strain.cbd_content}</p>
-                    </div>
-                    <div class="strain-details">
-                        <p><strong>Effects:</strong> ${strain.effects.join(', ')}</p>
-                        <p><strong>Flavors:</strong> ${strain.flavors.join(', ')}</p>
-                    </div>
-                    <div class="strain-description">
-                        ${strain.description}
-                    </div>
+                <div class="strain-description">
+                    ${strain.description}
                 </div>
             </div>
         `;
