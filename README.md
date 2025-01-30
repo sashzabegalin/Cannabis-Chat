@@ -1,6 +1,6 @@
 # Cannabis Product Guide Chatbot 🌿
 
-An MVP (Minimum Viable Product) demonstrating an AI-powered cannabis strain recommendation chatbot designed to help users find their perfect cannabis products through an intuitive conversational interface.
+An MVP (Minimum Viable Product) demonstrating an AI-powered cannabis strain recommendation chatbot designed to help users find their perfect cannabis strain through an intuitive conversational interface.
 
 ## Overview
 
