@@ -127,15 +127,38 @@ document.addEventListener('DOMContentLoaded', function() {
         choices.forEach(choice => {
             const button = document.createElement('button');
             button.className = 'choice-button animate__animated animate__fadeIn';
-            // Assign different action types for visual variety
-            const actions = ['primary', 'success', 'info', 'accent'];
-            const actionIndex = Math.floor(Math.random() * actions.length);
-            button.setAttribute('data-action', actions[actionIndex]);
-            button.textContent = choice;
+            const icon = document.createElement('i');
+            icon.className = getChoiceIcon(choice);
+            button.appendChild(icon);
+            const text = document.createElement('span');
+            text.textContent = choice;
+            button.appendChild(text);
             button.onclick = () => handleChoice(choice);
             buttonChoices.appendChild(button);
         });
     }
+
+    function getChoiceIcon(choice) {
+        //  A very basic implementation -  replace with more sophisticated logic as needed.
+        switch (choice) {
+            case "Find the right strain": return "fas fa-leaf";
+            case "Learn about cannabis": return "fas fa-book";
+            case "Medical benefits": return "fas fa-medkit";
+            case "New to cannabis": return "fas fa-user-graduate";
+            case "Occasional user": return "fas fa-user";
+            case "Experienced user": return "fas fa-user-check";
+            case "Relaxation": return "fas fa-cloud-sun";
+            case "Energy": return "fas fa-bolt";
+            case "Creativity": return "fas fa-lightbulb";
+            case "Sleep": return "fas fa-moon";
+            case "Pain Relief": return "fas fa-heartbeat";
+            case "Find another strain": return "fas fa-redo";
+            case "No, I'm good": return "fas fa-times";
+            case "Start over": return "fas fa-undo";
+            default: return ""; // No icon
+        }
+    }
+
 
     function handleChoice(choice) {
         addMessage(choice, false);
