@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleChoice(choice) {
-        const cleanChoice = choice.replace(/[🌱🌿🍃✨💫🌙💪🎨]/g, '').trim();
+        const cleanChoice = choice.replace(/[🌱🌿🍃✨💫🌙💪🎨🔍✌️🌟]/g, '').trim();
         addMessage(choice, false);
         buttonChoices.innerHTML = '';
 
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ]);
                 break;
 
-            case "Start Fresh 🌟":
+            case "Start Fresh":
                 conversationState.experience = null; // Reset experience level
                 initializeChat();
                 break;
