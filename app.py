@@ -3,8 +3,6 @@ import logging
 from flask import Flask, render_template, jsonify, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from openai import OpenAI
-import json
 from mock_data import strains
 
 # Setup logging
@@ -22,18 +20,6 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Initialize OpenAI client with a chill personality
-openai = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-
-def get_strain_prompt(strain, preferences):
-    return f"""Hey bud! 🌿 Let me tell you about this awesome strain in a chill but professional way:
-        Strain: {strain.name}
-        Type: {strain.type}
-        Effects: {', '.join(strain.effects)}
-        Flavors: {', '.join(strain.flavors)}
-        User preferences: {preferences}
-        
-        Keep it laid-back but informative, like a knowledgeable budtender chatting with a friend."""
 
 @app.route('/')
 def index():
@@ -117,57 +103,13 @@ def recommend():
                 "recommendations": []
             }), 404
 
-        # Get personalized description using OpenAI
-        description = generate_strain_description(matched_strains[0], preferences)
-
-        # Enhance strain data with detailed information
-        detailed_recommendations = [{
-            "name": strain["name"],
-            "type": strain["type"],
-            "effects": strain["effects"],
-            "flavors": strain["flavors"],
-            "thc_content": strain["thc_content"],
-            "cbd_content": strain["cbd_content"],
-            "description": strain["description"],
-            "medical_benefits": strain["medical_benefits"],
-            "growing_time": strain["growing_time"],
-            "terpenes": strain.get("terpenes", []),
-            "potency_level": strain.get("potency_level", "Medium"),
-            "average_price": strain.get("average_price", "Market price varies"),
-            "grow_difficulty": strain.get("grow_difficulty", "Moderate")
-        } for strain in matched_strains]
-
         return jsonify({
-            "recommendations": detailed_recommendations,
-            "description": description
+            "recommendations": matched_strains
         })
 
     except Exception as e:
         logger.error(f"Error in recommendation: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
-
-def generate_strain_description(strain, preferences):
-    try:
-        prompt = f"""Generate a personalized cannabis strain recommendation description for:
-        Strain: {strain['name']}
-        Type: {strain['type']}
-        Effects: {', '.join(strain['effects'])}
-        Flavors: {', '.join(strain['flavors'])}
-        User preferences: {json.dumps(preferences)}
-        
-        Keep the response conversational and informative."""
-
-        response = openai.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=150
-        )
-        
-        return response.choices[0].message.content
-    
-    except Exception as e:
-        logger.error(f"Error generating description: {str(e)}")
-        return f"Based on your preferences, {strain['name']} ({strain['type']}) might be a good choice for you."
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
