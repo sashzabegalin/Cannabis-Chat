@@ -53,20 +53,10 @@ body {
 
 .age-verify-buttons {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 0.75rem;
     justify-content: center;
     margin-top: 1.5rem;
-}
-
-.age-verify-buttons .choice-button {
-    width: 100%;
-    display: block;
-    background: var(--primary-green);
-}
-
-.age-verify-buttons .choice-button:last-child {
-    background: var(--text-dark);
 }
 
 .chat-container {
