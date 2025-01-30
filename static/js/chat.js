@@ -57,16 +57,32 @@ What would you like to know more about?`, [
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    function getEffectIcon(effect) {
+        // Map of common effects to their base icons
+        const effectMap = {
+            'relaxed': 'relaxation',
+            'happy': 'creativity',
+            'euphoric': 'energy',
+            'creative': 'creativity',
+            'focused': 'energy',
+            'energetic': 'energy',
+            'sleepy': 'relaxation',
+            'uplifted': 'energy',
+            'hungry': 'relaxation',
+            'pain relief': 'relaxation'
+        };
+
+        const baseEffect = effectMap[effect.toLowerCase()] || 'relaxation';
+        return `
+            <div class="effect-icon">
+                <img src="/static/images/effects/${baseEffect}.svg" alt="${effect} effect" />
+                <span>${effect}</span>
+            </div>
+        `;
+    }
+
     function createStrainCard(strain) {
-        const effectIcons = strain.effects.map(effect => {
-            const iconName = effect.toLowerCase().replace(/\s+/g, '');
-            return `
-                <div class="effect-icon">
-                    <img src="/static/images/effects/${iconName}.svg" alt="${effect} effect" />
-                    <span>${effect}</span>
-                </div>
-            `;
-        }).join('');
+        const effectIcons = strain.effects.map(effect => getEffectIcon(effect)).join('');
 
         return `
             <div class="strain-card animate__animated animate__fadeIn">
