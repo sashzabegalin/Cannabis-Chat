@@ -30,15 +30,77 @@ openai = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 def index():
     return render_template('index.html')
 
+def filter_strains(preferences):
+    filtered = strains
+    logger.debug(f"Starting strain filtering with preferences: {preferences}")
+    logger.debug(f"Initial number of strains: {len(filtered)}")
+
+    # Map experience levels to recommended effects
+    experience_effect_map = {
+        "New to cannabis": ["Relaxed", "Happy", "Mild", "Balanced"],
+        "Occasional user": ["Creative", "Uplifted", "Focused", "Energetic"],
+        "Experienced user": ["Euphoric", "Potent", "Intense", "Strong"]
+    }
+
+    # Add experience-based effects to the search
+    if preferences.get('experience'):
+        exp_effects = experience_effect_map.get(preferences.get('experience'), [])
+        logger.debug(f"Adding experience effects: {exp_effects}")
+        if preferences.get('effect'):
+            exp_effects.append(preferences.get('effect'))
+        preferences['effect'] = exp_effects
+
+    if preferences.get('type'):
+        filtered = [s for s in filtered if s['type'].lower() == preferences['type'].lower()]
+        logger.debug(f"After type filter: {len(filtered)} strains")
+
+    if preferences.get('effect'):
+        if isinstance(preferences['effect'], list):
+            effects = preferences['effect']
+        else:
+            effects = [preferences['effect']]
+
+        filtered = [s for s in filtered if any(
+            any(desired.lower() in actual.lower() for actual in s['effects'])
+            for desired in effects
+        )]
+        logger.debug(f"After effect filter: {len(filtered)} strains")
+
+    # Calculate match score based on effects and experience level
+    def calculate_match_score(strain):
+        effect_score = 0
+        if preferences.get('effect'):
+            effects = preferences['effect'] if isinstance(preferences['effect'], list) else [preferences['effect']]
+            effect_score = sum(1 for e in strain['effects'] if 
+                             any(desired.lower() in e.lower() for desired in effects))
+
+        experience_score = 0
+        if preferences.get('experience'):
+            exp_level = preferences['experience']
+            if exp_level == "New to cannabis" and float(strain['thc_content'].split('-')[0]) < 18:
+                experience_score += 2
+            elif exp_level == "Occasional user" and 18 <= float(strain['thc_content'].split('-')[0]) <= 22:
+                experience_score += 2
+            elif exp_level == "Experienced user" and float(strain['thc_content'].split('-')[0]) > 22:
+                experience_score += 2
+
+        return effect_score + experience_score
+
+    filtered.sort(key=calculate_match_score, reverse=True)
+    logger.debug(f"Final number of filtered strains: {len(filtered)}")
+    return filtered[:3]  # Return top 3 matches
+
 @app.route('/api/recommend', methods=['POST'])
 @limiter.limit("10 per minute")
 def recommend():
     try:
         data = request.json
         preferences = data.get('preferences', {})
+        logger.debug(f"Received preferences: {preferences}")
 
         # Filter strains based on preferences
         matched_strains = filter_strains(preferences)
+        logger.debug(f"Found {len(matched_strains)} matching strains")
 
         if not matched_strains:
             return jsonify({
@@ -59,7 +121,11 @@ def recommend():
             "cbd_content": strain["cbd_content"],
             "description": strain["description"],
             "medical_benefits": strain["medical_benefits"],
-            "growing_time": strain["growing_time"]
+            "growing_time": strain["growing_time"],
+            "terpenes": strain.get("terpenes", []),
+            "potency_level": strain.get("potency_level", "Medium"),
+            "average_price": strain.get("average_price", "Market price varies"),
+            "grow_difficulty": strain.get("grow_difficulty", "Moderate")
         } for strain in matched_strains]
 
         return jsonify({
@@ -70,27 +136,6 @@ def recommend():
     except Exception as e:
         logger.error(f"Error in recommendation: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
-
-def filter_strains(preferences):
-    filtered = strains
-
-    if preferences.get('type'):
-        filtered = [s for s in filtered if s['type'].lower() == preferences['type'].lower()]
-
-    if preferences.get('effect'):
-        filtered = [s for s in filtered if preferences['effect'].lower() in [e.lower() for e in s['effects']]]
-
-    if preferences.get('flavor'):
-        filtered = [s for s in filtered if preferences['flavor'].lower() in [f.lower() for f in s['flavors']]]
-
-    # Sort by match score (number of matching effects and flavors)
-    def calculate_match_score(strain):
-        effect_match = sum(1 for e in strain['effects'] if preferences.get('effect', '').lower() in e.lower())
-        flavor_match = sum(1 for f in strain['flavors'] if preferences.get('flavor', '').lower() in f.lower())
-        return effect_match + flavor_match
-
-    filtered.sort(key=calculate_match_score, reverse=True)
-    return filtered[:3]  # Return top 3 matches
 
 def generate_strain_description(strain, preferences):
     try:
