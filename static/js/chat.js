@@ -2,8 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const ageVerifyModal = document.getElementById('ageVerifyModal');
     const mainContent = document.getElementById('mainContent');
     const chatMessages = document.getElementById('chatMessages');
-    const userInput = document.getElementById('userInput');
-    const sendButton = document.getElementById('sendButton');
     const buttonChoices = document.getElementById('buttonChoices');
 
     // Age verification handlers
@@ -31,34 +29,37 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function initializeChat() {
-        // Initial welcome message
-        addBotMessage(`Welcome to your personal cannabis wellness guide! 👋
-
-I'm here to help you discover the perfect cannabis products for your needs. I can assist with:
-
-• Finding strains based on desired effects
-• Learning about different consumption methods
-• Understanding terpenes and cannabinoids
-• Exploring medical benefits
-
-What would you like to know more about?`, [
+        addBotMessage("Welcome! What would you like to explore?", [
             "Find the right strain",
             "Learn about cannabis",
-            "Consumption methods",
             "Medical benefits"
         ]);
+    }
+
+    function addThinkingAnimation() {
+        const thinking = document.createElement('div');
+        thinking.className = 'thinking animate__animated animate__fadeIn';
+        thinking.innerHTML = `
+            Thinking<div class="thinking-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        `;
+        chatMessages.appendChild(thinking);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return thinking;
     }
 
     function addMessage(message, isBot = false) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isBot ? 'bot-message' : 'user-message'} animate__animated animate__fadeIn`;
-        messageDiv.innerHTML = message.replace(/\n/g, '<br>');
+        messageDiv.innerHTML = message;
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     function getEffectIcon(effect) {
-        // Map of common effects to their base icons
         const effectMap = {
             'relaxed': 'relaxation',
             'happy': 'creativity',
@@ -75,7 +76,7 @@ What would you like to know more about?`, [
         const baseEffect = effectMap[effect.toLowerCase()] || 'relaxation';
         return `
             <div class="effect-icon">
-                <img src="/static/images/effects/${baseEffect}.svg" alt="${effect} effect" />
+                <img src="/static/images/effects/${baseEffect}.svg" alt="${effect}" />
                 <span>${effect}</span>
             </div>
         `;
@@ -99,20 +100,24 @@ What would you like to know more about?`, [
                     <div class="strain-details">
                         <p><strong>Effects:</strong> ${strain.effects.join(', ')}</p>
                         <p><strong>Flavors:</strong> ${strain.flavors.join(', ')}</p>
-                        <p><strong>Medical Benefits:</strong> ${strain.medical_benefits.join(', ')}</p>
-                        <p><strong>Growing Time:</strong> ${strain.growing_time}</p>
                     </div>
                     <div class="strain-description">
-                        <p>${strain.description}</p>
+                        ${strain.description}
                     </div>
                 </div>
             </div>
         `;
     }
 
-    function addBotMessage(message, choices = null) {
+    async function addBotMessage(message, choices = null) {
+        const thinking = addThinkingAnimation();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        thinking.remove();
+
         addMessage(message, true);
+
         if (choices) {
+            await new Promise(resolve => setTimeout(resolve, 300));
             displayChoices(choices);
         }
     }
@@ -130,11 +135,12 @@ What would you like to know more about?`, [
 
     function handleChoice(choice) {
         addMessage(choice, false);
+        buttonChoices.innerHTML = '';
 
         switch(choice) {
             case "Find the right strain":
                 conversationState.step = 'experience_level';
-                addBotMessage("Great! Before we begin, what's your experience level with cannabis?", [
+                addBotMessage("What's your experience level?", [
                     "New to cannabis",
                     "Occasional user",
                     "Experienced user"
@@ -142,30 +148,18 @@ What would you like to know more about?`, [
                 break;
 
             case "Learn about cannabis":
-                addBotMessage(`Cannabis education is important for responsible use. What would you like to learn about?`, [
-                    "Cannabinoids (THC/CBD)",
-                    "Terpenes",
+                addBotMessage("What would you like to learn about?", [
                     "Strain types",
+                    "THC vs CBD",
                     "Find the right strain"
                 ]);
                 break;
 
-            case "Consumption methods":
-                addBotMessage(`There are several ways to consume cannabis. Which method interests you?`, [
-                    "Smoking",
-                    "Vaping",
-                    "Edibles",
-                    "Tinctures",
-                    "Back to main menu"
-                ]);
-                break;
-
             case "Medical benefits":
-                addBotMessage(`Cannabis can help with various conditions. What are you looking to address?`, [
+                addBotMessage("What are you looking to address?", [
                     "Pain management",
                     "Anxiety/Stress",
                     "Sleep issues",
-                    "Other conditions",
                     "Find the right strain"
                 ]);
                 break;
@@ -178,45 +172,48 @@ What would you like to know more about?`, [
                 conversationState.step = 'desired_effect';
                 addBotMessage("What effect are you looking for?", [
                     "Relaxation",
-                    "Energy & Focus",
+                    "Energy",
                     "Creativity",
-                    "Pain Relief",
-                    "Sleep Aid"
+                    "Sleep",
+                    "Pain Relief"
                 ]);
                 break;
 
             // Effect choices
             case "Relaxation":
-            case "Energy & Focus":
+            case "Energy":
             case "Creativity":
+            case "Sleep":
             case "Pain Relief":
-            case "Sleep Aid":
                 conversationState.preferences.effect = choice;
                 getRecommendation();
                 break;
 
-            case "Back to main menu":
+            case "Start over":
                 conversationState.step = 'welcome';
                 conversationState.preferences = {};
                 initializeChat();
                 break;
 
             default:
-                if (conversationState.step === 'recommendation') {
-                    if (choice === "Yes") {
-                        conversationState.step = 'welcome';
-                        conversationState.preferences = {};
-                        initializeChat();
-                    } else {
-                        addBotMessage("Thank you for using our service! Feel free to come back anytime you need guidance.");
-                    }
+                if (choice === "Find another strain") {
+                    conversationState.step = 'experience_level';
+                    addBotMessage("What's your experience level?", [
+                        "New to cannabis",
+                        "Occasional user",
+                        "Experienced user"
+                    ]);
+                } else if (choice === "No, I'm good") {
+                    addBotMessage("Thanks for using our service! Feel free to start over when you're ready.", [
+                        "Start over"
+                    ]);
                 }
         }
     }
 
     async function getRecommendation() {
         try {
-            addBotMessage("Let me find the perfect products for you... 🔍");
+            const thinking = addThinkingAnimation();
 
             const response = await fetch('/api/recommend', {
                 method: 'POST',
@@ -228,35 +225,37 @@ What would you like to know more about?`, [
                 })
             });
 
+            thinking.remove();
             const data = await response.json();
 
             if (response.ok) {
                 const recommendations = data.recommendations;
-                const description = data.description;
-
-                addBotMessage(description);
 
                 if (recommendations.length > 0) {
+                    addBotMessage("Here are your personalized recommendations:");
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
                     const strainCards = recommendations.map(strain => createStrainCard(strain)).join('');
                     addBotMessage(strainCards);
                 }
 
-                conversationState.step = 'recommendation';
-                addBotMessage("Would you like to explore more products or learn about something else?", [
+                await new Promise(resolve => setTimeout(resolve, 500));
+                addBotMessage("Would you like to explore more options?", [
                     "Find another strain",
-                    "Learn about cannabis",
                     "No, I'm good"
                 ]);
             } else {
-                addBotMessage("I couldn't find any matching products right now. Would you like to try a different approach?", [
-                    "Try again",
-                    "Learn about cannabis",
+                addBotMessage("I couldn't find matching products. Let's try again.", [
+                    "Start over",
                     "No, thanks"
                 ]);
             }
         } catch (error) {
             console.error('Error:', error);
-            addBotMessage("I encountered an issue while searching. Would you like to try again?", ["Yes", "No"]);
+            addBotMessage("Something went wrong. Would you like to try again?", [
+                "Start over",
+                "No, thanks"
+            ]);
         }
     }
 });
