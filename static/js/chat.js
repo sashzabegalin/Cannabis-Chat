@@ -127,6 +127,10 @@ document.addEventListener('DOMContentLoaded', function() {
         choices.forEach(choice => {
             const button = document.createElement('button');
             button.className = 'choice-button animate__animated animate__fadeIn';
+            // Assign different action types for visual variety
+            const actions = ['primary', 'success', 'info', 'accent'];
+            const actionIndex = Math.floor(Math.random() * actions.length);
+            button.setAttribute('data-action', actions[actionIndex]);
             button.textContent = choice;
             button.onclick = () => handleChoice(choice);
             buttonChoices.appendChild(button);
