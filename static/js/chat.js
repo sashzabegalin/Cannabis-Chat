@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let conversationState = {
         step: 'welcome',
-        preferences: {}
+        preferences: {},
+        experience: null // Store experience level persistently
     };
 
     document.getElementById('verifyAge').addEventListener('click', function() {
@@ -52,7 +53,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function addMessage(message, isBot = false) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isBot ? 'bot-message' : 'user-message'} animate__animated animate__fadeIn`;
-        messageDiv.innerHTML = message;
+
+        if (isBot) {
+            messageDiv.innerHTML = `
+                <div class="bot-title">🤖 Cannabis Chat</div>
+                ${message}
+            `;
+        } else {
+            messageDiv.innerHTML = message;
+        }
+
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -112,6 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
             case "New to cannabis":
             case "Occasional user":
             case "Experienced user":
+                conversationState.experience = cleanChoice; // Store experience level
                 conversationState.preferences.experience = cleanChoice;
                 addBotMessage("Great! What effect are you looking for? 🤔", [
                     "✨ Relaxation",
@@ -132,7 +143,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
 
             case "Find another strain":
-                initializeChat();
+                // Use stored experience level to skip directly to effects
+                addBotMessage(`Based on your experience level (${conversationState.experience}), what effect are you looking for? 🤔`, [
+                    "✨ Relaxation",
+                    "💫 Energy",
+                    "🎨 Creativity",
+                    "🌙 Sleep",
+                    "💪 Pain Relief"
+                ]);
                 break;
 
             case "No, I'm good":
@@ -142,6 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
 
             case "Start Fresh 🌟":
+                conversationState.experience = null; // Reset experience level
                 initializeChat();
                 break;
         }

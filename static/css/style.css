@@ -5,11 +5,12 @@
     --light-beige: #F8F8DC;
     --white: #FFFFFF;
     --text-dark: #2d3748;
+    --brown-transparent: rgba(139, 69, 19, 0.1);
     --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 body {
-    background: var(--beige);
+    background: var(--brown-transparent);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     height: 100vh;
     margin: 0;
@@ -72,6 +73,16 @@ body {
     background: var(--light-beige);
     margin-right: auto;
     color: var(--text-dark);
+}
+
+.bot-title {
+    background: var(--primary-green);
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 12px 12px 0 0;
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin: -1rem -1.25rem 0.75rem -1.25rem;
 }
 
 .user-message {
