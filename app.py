@@ -22,9 +22,18 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Initialize OpenAI client
-# the newest OpenAI model is "gpt-4o" which was released May 13, 2024
+# Initialize OpenAI client with a chill personality
 openai = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+def get_strain_prompt(strain, preferences):
+    return f"""Hey bud! 🌿 Let me tell you about this awesome strain in a chill but professional way:
+        Strain: {strain.name}
+        Type: {strain.type}
+        Effects: {', '.join(strain.effects)}
+        Flavors: {', '.join(strain.flavors)}
+        User preferences: {preferences}
+        
+        Keep it laid-back but informative, like a knowledgeable budtender chatting with a friend."""
 
 @app.route('/')
 def index():

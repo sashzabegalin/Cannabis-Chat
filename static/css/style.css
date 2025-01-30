@@ -149,6 +149,17 @@ body {
     margin-right: auto;
 }
 
+.bot-message::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background: var(--deep-green);
+    mask: url('/static/images/leaf.svg') no-repeat center;
+    -webkit-mask: url('/static/images/leaf.svg') no-repeat center;
+    margin-right: 8px;
+}
+
 .bot-icon {
     width: 32px;
     height: 32px;
@@ -232,10 +243,23 @@ body {
 }
 
 .strain-type {
+    display: flex;
+    align-items: center;
     color: var(--forest);
     font-size: 0.9rem;
     margin-bottom: 0.75rem;
     font-weight: 500;
+}
+
+.strain-type::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: var(--deep-green);
+    mask: url('/static/images/leaf.svg') no-repeat center;
+    -webkit-mask: url('/static/images/leaf.svg') no-repeat center;
+    margin-right: 8px;
 }
 
 .strain-description {
