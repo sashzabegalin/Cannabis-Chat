@@ -1,198 +1,239 @@
 :root {
-    --primary-green: #2c5530;
-    --secondary-green: #4a7856;
-    --accent-brown: #8b4513;
-    --light-beige: #f5f0e1;
-    --off-white: #faf9f6;
+    --sage-green: rgba(144, 169, 147, 0.9);
+    --earth-brown: rgba(139, 126, 116, 0.9);
+    --soft-cream: rgba(245, 240, 231, 0.95);
+    --glass-white: rgba(255, 255, 255, 0.65);
+    --text-dark: #2c3e50;
+    --accent-green: rgba(76, 175, 80, 0.9);
 }
 
 body {
-    background: url('https://images.unsplash.com/photo-1619364744729-f0d1fa79bc79') center/cover fixed;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('https://images.unsplash.com/photo-1536759078151-206ad8ffde42') center/cover fixed;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, sans-serif;
     height: 100vh;
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    color: var(--text-dark);
 }
 
-.chat-container {
+/* Age Verification Modal */
+.age-verify-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+}
+
+.age-verify-content {
+    background: var(--glass-white);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.age-verify-content h2 {
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+}
+
+.age-verify-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+/* Chat Container */
+.chat-container {
+    height: 100vh;
     max-width: 1200px;
     margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .chat-header {
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 15px 15px 0 0;
-    padding: 20px;
+    background: var(--glass-white);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 1.5rem;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .leaf-icon {
     width: 40px;
     height: 40px;
-    margin-bottom: 10px;
+    margin-bottom: 0.5rem;
 }
 
 .chat-messages {
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    height: calc(100vh - 250px);
+    background: var(--glass-white);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    flex-grow: 1;
     overflow-y: auto;
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .message {
-    margin-bottom: 15px;
-    padding: 10px 15px;
+    margin-bottom: 1rem;
+    padding: 1rem;
     border-radius: 15px;
     max-width: 80%;
-    animation: fadeIn 0.5s ease-in;
+    animation: fadeIn 0.3s ease-in;
 }
 
 .bot-message {
-    background-color: var(--light-beige);
+    background: var(--sage-green);
+    color: white;
     margin-right: auto;
-    color: var(--primary-green);
 }
 
 .user-message {
-    background-color: var(--primary-green);
+    background: var(--earth-brown);
     color: white;
     margin-left: auto;
 }
 
 .chat-input {
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 0 0 15px 15px;
-    padding: 20px;
+    background: var(--glass-white);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .button-choices {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 0.75rem;
+    margin-top: 1rem;
 }
 
 .choice-button {
-    background-color: var(--secondary-green);
+    background: var(--accent-green);
     color: white;
     border: none;
-    border-radius: 20px;
-    padding: 8px 16px;
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-size: 0.95rem;
+    backdrop-filter: blur(4px);
 }
 
 .choice-button:hover {
-    background-color: var(--primary-green);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.btn-primary {
-    background-color: var(--primary-green);
-    border-color: var(--primary-green);
+/* Strain Card */
+.strain-card {
+    background: var(--glass-white);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease;
 }
 
-.btn-primary:hover {
-    background-color: var(--secondary-green);
-    border-color: var(--secondary-green);
+.strain-card:hover {
+    transform: translateY(-4px);
+}
+
+.strain-card h3 {
+    color: var(--text-dark);
+    margin: 0 0 0.75rem 0;
+    font-size: 1.4rem;
+}
+
+.strain-type {
+    display: inline-block;
+    background: var(--sage-green);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.strain-content {
+    display: grid;
+    gap: 1rem;
+}
+
+.strain-info {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.strain-info p {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    background: var(--soft-cream);
+    border-radius: 15px;
+    font-size: 0.9rem;
+}
+
+.strain-details p {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.strain-description {
+    font-style: italic;
+    padding: 1rem;
+    background: var(--soft-cream);
+    border-radius: 15px;
+    margin-top: 0.75rem;
 }
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .chat-container {
-        padding: 10px;
+        padding: 1rem;
     }
-    
+
     .message {
         max-width: 90%;
     }
-}
 
-/* Strain Card Styles */
-.strain-card {
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    padding: 20px;
-    margin: 15px 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--secondary-green);
-}
-
-.strain-card h3 {
-    color: var(--primary-green);
-    margin: 0 0 10px 0;
-    font-size: 1.4em;
-}
-
-.strain-type {
-    display: inline-block;
-    background-color: var(--secondary-green);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.9em;
-    margin-bottom: 15px;
-}
-
-.strain-content {
-    display: grid;
-    gap: 15px;
-}
-
-.strain-info {
-    display: flex;
-    gap: 20px;
-}
-
-.strain-info p {
-    margin: 0;
-    padding: 5px 10px;
-    background-color: var(--light-beige);
-    border-radius: 10px;
-    font-size: 0.9em;
-}
-
-.strain-details p {
-    margin: 5px 0;
-    font-size: 0.95em;
-    color: #333;
-}
-
-.strain-description {
-    font-style: italic;
-    color: #666;
-    padding: 10px;
-    background-color: var(--light-beige);
-    border-radius: 10px;
-    margin-top: 10px;
-}
-
-.strain-description p {
-    margin: 0;
-}
-
-/* Responsive adjustments for strain cards */
-@media (max-width: 768px) {
     .strain-info {
         flex-direction: column;
-        gap: 10px;
     }
 
     .strain-card {
-        padding: 15px;
-    }
-
-    .strain-content {
-        gap: 10px;
+        padding: 1rem;
     }
 }

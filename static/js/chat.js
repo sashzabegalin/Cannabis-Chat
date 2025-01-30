@@ -1,25 +1,58 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const ageVerifyModal = document.getElementById('ageVerifyModal');
+    const mainContent = document.getElementById('mainContent');
     const chatMessages = document.getElementById('chatMessages');
     const userInput = document.getElementById('userInput');
     const sendButton = document.getElementById('sendButton');
     const buttonChoices = document.getElementById('buttonChoices');
+
+    // Age verification handlers
+    document.getElementById('verifyAge').addEventListener('click', function() {
+        localStorage.setItem('ageVerified', 'true');
+        ageVerifyModal.style.display = 'none';
+        mainContent.style.display = 'flex';
+        initializeChat();
+    });
+
+    document.getElementById('declineAge').addEventListener('click', function() {
+        window.location.href = 'https://www.google.com';
+    });
+
+    // Check age verification status
+    if (localStorage.getItem('ageVerified') === 'true') {
+        ageVerifyModal.style.display = 'none';
+        mainContent.style.display = 'flex';
+        initializeChat();
+    }
 
     let conversationState = {
         step: 'welcome',
         preferences: {}
     };
 
-    // Initial welcome message
-    addBotMessage("Welcome to Cannabis Chat! I'm here to help you find the perfect strain. What type of cannabis are you interested in?", [
-        "Indica",
-        "Sativa",
-        "Hybrid"
-    ]);
+    function initializeChat() {
+        // Initial welcome message
+        addBotMessage(`Welcome to your personal cannabis wellness guide! 👋
+
+I'm here to help you discover the perfect cannabis products for your needs. I can assist with:
+
+• Finding strains based on desired effects
+• Learning about different consumption methods
+• Understanding terpenes and cannabinoids
+• Exploring medical benefits
+
+What would you like to know more about?`, [
+            "Find the right strain",
+            "Learn about cannabis",
+            "Consumption methods",
+            "Medical benefits"
+        ]);
+    }
 
     function addMessage(message, isBot = false) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isBot ? 'bot-message' : 'user-message'} animate__animated animate__fadeIn`;
-        messageDiv.innerHTML = message; // Changed from textContent to innerHTML to support HTML content
+        messageDiv.innerHTML = message.replace(/\n/g, '<br>');
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -69,42 +102,92 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleChoice(choice) {
         addMessage(choice, false);
 
-        switch(conversationState.step) {
-            case 'welcome':
-                conversationState.preferences.type = choice;
-                conversationState.step = 'effect';
+        switch(choice) {
+            case "Find the right strain":
+                conversationState.step = 'experience_level';
+                addBotMessage("Great! Before we begin, what's your experience level with cannabis?", [
+                    "New to cannabis",
+                    "Occasional user",
+                    "Experienced user"
+                ]);
+                break;
+
+            case "Learn about cannabis":
+                addBotMessage(`Cannabis education is important for responsible use. What would you like to learn about?`, [
+                    "Cannabinoids (THC/CBD)",
+                    "Terpenes",
+                    "Strain types",
+                    "Find the right strain"
+                ]);
+                break;
+
+            case "Consumption methods":
+                addBotMessage(`There are several ways to consume cannabis. Which method interests you?`, [
+                    "Smoking",
+                    "Vaping",
+                    "Edibles",
+                    "Tinctures",
+                    "Back to main menu"
+                ]);
+                break;
+
+            case "Medical benefits":
+                addBotMessage(`Cannabis can help with various conditions. What are you looking to address?`, [
+                    "Pain management",
+                    "Anxiety/Stress",
+                    "Sleep issues",
+                    "Other conditions",
+                    "Find the right strain"
+                ]);
+                break;
+
+            // Experience level responses
+            case "New to cannabis":
+            case "Occasional user":
+            case "Experienced user":
+                conversationState.preferences.experience = choice;
+                conversationState.step = 'desired_effect';
                 addBotMessage("What effect are you looking for?", [
-                    "Relaxed",
-                    "Energetic",
-                    "Creative",
-                    "Sleepy",
-                    "Happy"
+                    "Relaxation",
+                    "Energy & Focus",
+                    "Creativity",
+                    "Pain Relief",
+                    "Sleep Aid"
                 ]);
                 break;
 
-            case 'effect':
+            // Effect choices
+            case "Relaxation":
+            case "Energy & Focus":
+            case "Creativity":
+            case "Pain Relief":
+            case "Sleep Aid":
                 conversationState.preferences.effect = choice;
-                conversationState.step = 'flavor';
-                addBotMessage("What flavor profile do you prefer?", [
-                    "Earthy",
-                    "Sweet",
-                    "Citrus",
-                    "Berry",
-                    "Pine"
-                ]);
-                break;
-
-            case 'flavor':
-                conversationState.preferences.flavor = choice;
-                conversationState.step = 'recommendation';
                 getRecommendation();
                 break;
+
+            case "Back to main menu":
+                conversationState.step = 'welcome';
+                conversationState.preferences = {};
+                initializeChat();
+                break;
+
+            default:
+                if (conversationState.step === 'recommendation') {
+                    if (choice === "Yes") {
+                        conversationState.step = 'welcome';
+                        conversationState.preferences = {};
+                        initializeChat();
+                    } else {
+                        addBotMessage("Thank you for using our service! Feel free to come back anytime you need guidance.");
+                    }
+                }
         }
     }
 
     async function getRecommendation() {
         try {
-            addBotMessage("Let me find the perfect strain for you...");
+            addBotMessage("Let me find the perfect products for you... 🔍");
 
             const response = await fetch('/api/recommend', {
                 method: 'POST',
@@ -129,15 +212,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     addBotMessage(strainCards);
                 }
 
-                // Reset conversation
-                conversationState.step = 'welcome';
-                addBotMessage("Would you like to find another strain?", ["Yes", "No"]);
+                conversationState.step = 'recommendation';
+                addBotMessage("Would you like to explore more products or learn about something else?", [
+                    "Find another strain",
+                    "Learn about cannabis",
+                    "No, I'm good"
+                ]);
             } else {
-                addBotMessage("I'm sorry, I couldn't find any matching strains. Would you like to try again?", ["Yes", "No"]);
+                addBotMessage("I couldn't find any matching products right now. Would you like to try a different approach?", [
+                    "Try again",
+                    "Learn about cannabis",
+                    "No, thanks"
+                ]);
             }
         } catch (error) {
             console.error('Error:', error);
-            addBotMessage("I'm sorry, something went wrong. Would you like to try again?", ["Yes", "No"]);
+            addBotMessage("I encountered an issue while searching. Would you like to try again?", ["Yes", "No"]);
         }
     }
 });
