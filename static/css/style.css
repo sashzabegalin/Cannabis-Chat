@@ -7,6 +7,8 @@
     --text-dark: #2d3748;
     --brown-transparent: rgba(139, 69, 19, 0.1);
     --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --decline-red: #e53e3e;
+    --hover-red: #c53030;
 }
 
 body {
@@ -157,6 +159,14 @@ body {
 .choice-button:hover {
     background: var(--hover-green);
     transform: translateY(-2px);
+}
+
+.choice-button.decline {
+    background: var(--decline-red);
+}
+
+.choice-button.decline:hover {
+    background: var(--hover-red);
 }
 
 .strain-card {
