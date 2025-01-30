@@ -4,7 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatMessages = document.getElementById('chatMessages');
     const buttonChoices = document.getElementById('buttonChoices');
 
-    // Age verification handlers
+    let conversationState = {
+        step: 'welcome',
+        preferences: {}
+    };
+
     document.getElementById('verifyAge').addEventListener('click', function() {
         localStorage.setItem('ageVerified', 'true');
         ageVerifyModal.style.display = 'none';
@@ -16,23 +20,17 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'https://www.google.com';
     });
 
-    // Check age verification status
     if (localStorage.getItem('ageVerified') === 'true') {
         ageVerifyModal.style.display = 'none';
         mainContent.style.display = 'flex';
         initializeChat();
     }
 
-    let conversationState = {
-        step: 'welcome',
-        preferences: {}
-    };
-
     function initializeChat() {
-        addBotMessage("Welcome! What would you like to explore?", [
-            "Find the right strain",
-            "Learn about cannabis",
-            "Medical benefits"
+        addBotMessage("Hey there! 👋 Ready to find your perfect strain? Let's start with your experience level:", [
+            "🌱 New to cannabis",
+            "🌿 Occasional user",
+            "🍃 Experienced user"
         ]);
     }
 
@@ -40,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const thinking = document.createElement('div');
         thinking.className = 'thinking animate__animated animate__fadeIn';
         thinking.innerHTML = `
-            Thinking<div class="thinking-dots">
+            Finding the perfect match<div class="thinking-dots">
                 <div class="dot"></div>
                 <div class="dot"></div>
                 <div class="dot"></div>
@@ -66,12 +64,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="strain-type">${strain.type}</div>
                 <div class="strain-content">
                     <div class="strain-info">
-                        <p>THC: ${strain.thc_content}</p>
-                        <p>CBD: ${strain.cbd_content}</p>
+                        <p>🔍 THC: ${strain.thc_content}</p>
+                        <p>💊 CBD: ${strain.cbd_content}</p>
                     </div>
                     <div class="strain-details">
-                        <p><strong>Effects:</strong> ${strain.effects.join(', ')}</p>
-                        <p><strong>Flavors:</strong> ${strain.flavors.join(', ')}</p>
+                        <p><strong>✨ Effects:</strong> ${strain.effects.join(', ')}</p>
+                        <p><strong>🌺 Flavors:</strong> ${strain.flavors.join(', ')}</p>
                     </div>
                     <div class="strain-description">
                         ${strain.description}
@@ -106,80 +104,46 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleChoice(choice) {
+        const cleanChoice = choice.replace(/[🌱🌿🍃✨💫🌙💪🎨]/g, '').trim();
         addMessage(choice, false);
         buttonChoices.innerHTML = '';
 
-        switch(choice) {
-            case "Find the right strain":
-                conversationState.step = 'experience_level';
-                addBotMessage("What's your experience level?", [
-                    "New to cannabis",
-                    "Occasional user",
-                    "Experienced user"
-                ]);
-                break;
-
-            case "Learn about cannabis":
-                addBotMessage("What would you like to learn about?", [
-                    "Strain types",
-                    "THC vs CBD",
-                    "Find the right strain"
-                ]);
-                break;
-
-            case "Medical benefits":
-                addBotMessage("What are you looking to address?", [
-                    "Pain management",
-                    "Anxiety/Stress",
-                    "Sleep issues",
-                    "Find the right strain"
-                ]);
-                break;
-
-            // Experience level responses
+        switch(cleanChoice) {
             case "New to cannabis":
             case "Occasional user":
             case "Experienced user":
-                conversationState.preferences.experience = choice;
-                conversationState.step = 'desired_effect';
-                addBotMessage("What effect are you looking for?", [
-                    "Relaxation",
-                    "Energy",
-                    "Creativity",
-                    "Sleep",
-                    "Pain Relief"
+                conversationState.preferences.experience = cleanChoice;
+                addBotMessage("Great! What effect are you looking for? 🤔", [
+                    "✨ Relaxation",
+                    "💫 Energy",
+                    "🎨 Creativity",
+                    "🌙 Sleep",
+                    "💪 Pain Relief"
                 ]);
                 break;
 
-            // Effect choices
             case "Relaxation":
             case "Energy":
             case "Creativity":
             case "Sleep":
             case "Pain Relief":
-                conversationState.preferences.effect = choice;
+                conversationState.preferences.effect = cleanChoice;
                 getRecommendation();
                 break;
 
-            case "Start over":
-                conversationState.step = 'welcome';
-                conversationState.preferences = {};
+            case "Find another strain":
                 initializeChat();
                 break;
 
-            default:
-                if (choice === "Find another strain") {
-                    conversationState.step = 'experience_level';
-                    addBotMessage("What's your experience level?", [
-                        "New to cannabis",
-                        "Occasional user",
-                        "Experienced user"
-                    ]);
-                } else if (choice === "No, I'm good") {
-                    addBotMessage("Thanks for using our service! Feel free to start over when you're ready.", [
-                        "Start over"
-                    ]);
-                }
+            case "No, I'm good":
+                addBotMessage("Thanks for chatting! Come back anytime! ✌️", [
+                    "Start Fresh 🌟"
+                ]);
+                break;
+
+            case "Start Fresh 🌟":
+                initializeChat();
+                break;
         }
     }
 
@@ -204,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const recommendations = data.recommendations;
 
                 if (recommendations.length > 0) {
-                    addBotMessage("Here are your personalized recommendations:");
+                    addBotMessage("✨ Here are your perfect matches:");
                     await new Promise(resolve => setTimeout(resolve, 500));
 
                     const strainCards = recommendations.map(strain => createStrainCard(strain)).join('');
@@ -212,21 +176,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 await new Promise(resolve => setTimeout(resolve, 500));
-                addBotMessage("Would you like to explore more options?", [
-                    "Find another strain",
-                    "No, I'm good"
+                addBotMessage("Want to explore more options? 🌿", [
+                    "Find another strain 🔍",
+                    "No, I'm good ✌️"
                 ]);
             } else {
-                addBotMessage("I couldn't find matching products. Let's try again.", [
-                    "Start over",
-                    "No, thanks"
+                addBotMessage("Oops! Let's try again! 🔄", [
+                    "Start Fresh 🌟"
                 ]);
             }
         } catch (error) {
             console.error('Error:', error);
-            addBotMessage("Something went wrong. Would you like to try again?", [
-                "Start over",
-                "No, thanks"
+            addBotMessage("Something went wrong! Let's start over! 🔄", [
+                "Start Fresh 🌟"
             ]);
         }
     }
