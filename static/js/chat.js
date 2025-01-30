@@ -54,15 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function addMessage(message, isBot = false) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isBot ? 'bot-message' : 'user-message'} animate__animated animate__fadeIn`;
-
-        const icon = document.createElement('i');
-        icon.className = isBot ? 'fas fa-robot chat-icon' : 'fas fa-user chat-icon';
-
-        messageDiv.appendChild(icon);
-        const messageContent = document.createElement('div');
-        messageContent.innerHTML = message;
-        messageDiv.appendChild(messageContent);
-
+        messageDiv.innerHTML = message;
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -72,8 +64,18 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="strain-card animate__animated animate__fadeIn">
                 <h3>${strain.name}</h3>
                 <div class="strain-type">${strain.type}</div>
-                <div class="strain-description">
-                    ${strain.description}
+                <div class="strain-content">
+                    <div class="strain-info">
+                        <p>THC: ${strain.thc_content}</p>
+                        <p>CBD: ${strain.cbd_content}</p>
+                    </div>
+                    <div class="strain-details">
+                        <p><strong>Effects:</strong> ${strain.effects.join(', ')}</p>
+                        <p><strong>Flavors:</strong> ${strain.flavors.join(', ')}</p>
+                    </div>
+                    <div class="strain-description">
+                        ${strain.description}
+                    </div>
                 </div>
             </div>
         `;
@@ -97,38 +99,11 @@ document.addEventListener('DOMContentLoaded', function() {
         choices.forEach(choice => {
             const button = document.createElement('button');
             button.className = 'choice-button animate__animated animate__fadeIn';
-            const icon = document.createElement('i');
-            icon.className = getChoiceIcon(choice);
-            button.appendChild(icon);
-            const text = document.createElement('span');
-            text.textContent = choice;
-            button.appendChild(text);
+            button.textContent = choice;
             button.onclick = () => handleChoice(choice);
             buttonChoices.appendChild(button);
         });
     }
-
-    function getChoiceIcon(choice) {
-        //  A very basic implementation -  replace with more sophisticated logic as needed.
-        switch (choice) {
-            case "Find the right strain": return "fas fa-leaf";
-            case "Learn about cannabis": return "fas fa-book";
-            case "Medical benefits": return "fas fa-medkit";
-            case "New to cannabis": return "fas fa-user-graduate";
-            case "Occasional user": return "fas fa-user";
-            case "Experienced user": return "fas fa-user-check";
-            case "Relaxation": return "fas fa-cloud-sun";
-            case "Energy": return "fas fa-bolt";
-            case "Creativity": return "fas fa-lightbulb";
-            case "Sleep": return "fas fa-moon";
-            case "Pain Relief": return "fas fa-heartbeat";
-            case "Find another strain": return "fas fa-redo";
-            case "No, I'm good": return "fas fa-times";
-            case "Start over": return "fas fa-undo";
-            default: return ""; // No icon
-        }
-    }
-
 
     function handleChoice(choice) {
         addMessage(choice, false);
